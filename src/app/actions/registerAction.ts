@@ -1,18 +1,19 @@
-"use server"
+"use server";
+import { schemaUser } from "../zod/schemaUser";
 
-export async function registerAction(formData: FormData){
-try {
-const rawData = {
+export async function registerAction(formData: FormData) {
+  const rawData = {
     name: formData.get("name"),
-    email:formData.get("email"),
-    password:formData.get("password")
+    email: formData.get("email"),
+    password: formData.get("password"),
+  };
 
-}
-console.log(rawData)
-    
-} catch (error) {
-    console.log(error)
-}
+  const results = schemaUser.safeParse(rawData);
 
+  if (!results.success) {
+    const errors = results.error.errors.map((error) => error.message);
+    return { success: false, errors };
+  }
 
+  return { success: true };
 }

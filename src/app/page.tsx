@@ -1,15 +1,33 @@
+"use client";
 import { registerAction } from "./actions/registerAction";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function RegisterForm() {
+  async function handleSubmit(formData:FormData) {
+    event.preventDefault();
+    const result = await registerAction(formData)
+    if (!result.success) {
+      result.errors.forEach((error: string) => {
+        toast.error(error); 
+      });
+    } else {
+      toast.success("Registro exitoso!");
+    }
+  }
+
   return (
     <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
       <div className="bg-gray-800 p-8 rounded-2xl shadow-lg max-w-sm w-full">
-        <h2 className="text-2xl font-bold text-white text-center mb-6">Registro</h2>
-        <form  action={registerAction} className="space-y-4">
+        <h2 className="text-2xl font-bold text-white text-center mb-6">
+          Registro
+        </h2>
+        <form action={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="name" className="block text-sm font-medium text-white">Nombre</label>
+            <label htmlFor="name" className="block text-sm font-medium text-white">
+              Nombre
+            </label>
             <input
-            required
               type="text"
               id="name"
               name="name"
@@ -18,9 +36,10 @@ export default function RegisterForm() {
             />
           </div>
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-white">Correo electrónico</label>
+            <label htmlFor="email" className="block text-sm font-medium text-white">
+              Correo electrónico
+            </label>
             <input
-            required
               type="email"
               id="email"
               name="email"
@@ -29,9 +48,10 @@ export default function RegisterForm() {
             />
           </div>
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-white">Contraseña</label>
+            <label htmlFor="password" className="block text-sm font-medium text-white">
+              Contraseña
+            </label>
             <input
-            required
               type="password"
               id="password"
               name="password"
@@ -39,6 +59,7 @@ export default function RegisterForm() {
               placeholder="••••••••"
             />
           </div>
+
           <button
             type="submit"
             className="w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 transition duration-300"
@@ -46,7 +67,9 @@ export default function RegisterForm() {
             Registrarse
           </button>
         </form>
+        <ToastContainer autoClose={3000} />
       </div>
     </div>
   );
 }
+
