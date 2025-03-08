@@ -1,10 +1,24 @@
 "use client";
+import { useRouter } from "next/navigation";
 import { registerAction } from "../../actions/registerAction";
-import "react-toastify/dist/ReactToastify.css";
-import { useActionState } from 'react'
+import { useActionState } from "react";
+import { useEffect } from "react";
 
 export default function RegisterForm() {
- const[state,dispatch] = useActionState(registerAction, {errors:[]})
+  const router = useRouter();
+  const [state, dispatch] = useActionState(registerAction, {
+    errors: [],
+    success: "",
+  });
+
+  // Redirigir cuando el registro sea exitoso
+  useEffect(() => {
+    if (state.success) {
+      setTimeout(() => {
+        router.push("/login");
+      }, 3000);
+    }
+  }, [state.success, router]);
 
   return (
     <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
@@ -12,6 +26,7 @@ export default function RegisterForm() {
         <h2 className="text-2xl font-bold text-white text-center mb-6">
           Registro
         </h2>
+
         <form action={dispatch} className="space-y-4">
           <div>
             <label htmlFor="name" className="block text-sm font-medium text-white">
@@ -57,18 +72,21 @@ export default function RegisterForm() {
             Registrarse
           </button>
 
-          {
-          state.errors.length > 0 && (
-          <div className="bg-red-500 text-white p-3 rounded-lg mb-4">
-            {state.errors.map((error, index) => (
-              <p key={index}>{error}</p>
-            ))}
-          </div>
-        )}
+          {state.errors.length > 0 && (
+            <div className="bg-red-500 text-white p-3 rounded-lg mb-4">
+              {state.errors.map((error, index) => (
+                <p key={index}>{error}</p>
+              ))}
+            </div>
+          )}
+
+          {state.success && (
+            <div className="bg-green-500 text-white p-3 rounded-lg mb-4 text-center">
+              {state.success}
+            </div>
+          )}
         </form>
-          
       </div>
     </div>
   );
 }
-

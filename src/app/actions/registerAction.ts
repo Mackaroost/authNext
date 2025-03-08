@@ -3,7 +3,8 @@ import { schemaUser } from "../zod/schemaUser";
 import bcrypt from "bcryptjs";
 
 interface actionState {
-  errors: string[] | undefined;
+  errors: string[]
+  success: string
 }
 
 export async function registerAction(prevState: actionState, formData: FormData) {
@@ -18,7 +19,10 @@ export async function registerAction(prevState: actionState, formData: FormData)
 
   if (!results.success) {
     const errors = results.error.errors.map((error) => error.message);
-    return { errors };
+    return { 
+             errors,
+             success:''
+     };
   }
 
   // Hasheamos la contraseña
@@ -27,8 +31,9 @@ export async function registerAction(prevState: actionState, formData: FormData)
 
  try {
   // Enviamos los datos a la API
-  const url = `http://localhost:3000/api/auth/signUp`;
-console.log(url)
+ // console.log(process.env.NEXT_PUBLIC_API_URL);
+  const url = `${process.env.NEXT_PUBLIC_API_URL}/api/auth/signUp`;
+  //console.log(url)
   const response = await fetch(url, {
     method: "POST",
     headers: {
@@ -44,10 +49,15 @@ console.log(url)
   const data = await response.json();
 
   if (!response.ok) {
-    return { errors: [data.message] };
+    return { errors: [data.error || "Error en el registro"], success: "" };
   }
+
+  return { errors: [], success: "Usuario registrado con éxito" };
+
 } catch (error) {
- console.log(error);
+  return { errors: ["Error al conectar con el servidor"], success: "" };
 }
-  return { errors: [] };
+  return { errors: prevState.errors,
+           success:prevState.success
+         };
 }
